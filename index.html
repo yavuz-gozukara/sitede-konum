@@ -3,137 +3,274 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bölge Avcısı - Sanal Para Toplama Oyunu</title>
+<title>Bölge Avcısı — Sanal Keşif Oyunu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0d2b26;
+    --ink-deep: #071b17;
+    --paper: #f3ead9;
+    --paper-dim: #e3d5b8;
+    --brass: #c9971f;
+    --brass-light: #e8c565;
+    --teal-line: #1f4a42;
+    --good: #7fbf8f;
+    --bad: #d99a7a;
+  }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(circle at top, #0f2438, #061019 70%);
-    color: #f1f5f9;
+    font-family: 'Space Mono', monospace;
+    background:
+      radial-gradient(circle at 15% 0%, #123c34 0%, transparent 55%),
+      radial-gradient(circle at 85% 100%, #0f322c 0%, transparent 55%),
+      var(--ink-deep);
+    color: var(--paper);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px;
+    padding: 18px 14px 40px;
   }
-  .info-banner {
-    background: #0c4a6e;
-    color: #bae6fd;
-    font-size: 12px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 14px;
-    max-width: 420px;
-    line-height: 1.5;
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass-light);
+    margin-bottom: 6px;
   }
   h1 {
-    font-size: 22px;
-    background: linear-gradient(90deg, #38bdf8, #22d3ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin-bottom: 4px;
-  }
-  .subtitle { font-size: 12px; color: #94a3b8; margin-bottom: 16px; text-align: center; }
-
-  .nickname-card, .balance-card {
-    background: #0e1a2b;
-    border: 1px solid #1e3a5f;
-    border-radius: 14px;
-    padding: 16px 22px;
-    text-align: center;
-    margin-bottom: 14px;
-    width: 100%;
-    max-width: 340px;
-  }
-  .nickname-card input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #1e3a5f;
-    background: #06101c;
-    color: #f1f5f9;
-    font-size: 14px;
-    margin-top: 8px;
-  }
-  .nickname-card button, .collect-btn {
-    margin-top: 10px;
-    background: linear-gradient(90deg, #38bdf8, #22d3ee);
-    color: #06101c;
-    border: none;
+    font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: 14px;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 100%;
+    font-size: 32px;
+    color: var(--paper);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
   }
-  .nickname-card button:disabled, .collect-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .subtitle {
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 320px;
+    line-height: 1.6;
+  }
 
-  .balance-card .label { font-size: 11px; color: #7dd3fc; text-transform: uppercase; letter-spacing: 0.05em; }
-  .balance-card .amount { font-size: 28px; font-weight: 700; color: #fbbf24; margin-top: 2px; }
-  .balance-card .location-note { font-size: 11px; color: #64748b; margin-top: 6px; }
-
-  .machine {
-    background: linear-gradient(160deg, #0e1a2b, #061019);
-    border: 2px solid #1e3a5f;
-    border-radius: 20px;
+  .card {
+    background: linear-gradient(180deg, #123a33, #0e2f2a);
+    border: 1px solid var(--teal-line);
+    border-radius: 4px;
     padding: 20px;
     width: 100%;
     max-width: 340px;
-    display: none;
+    margin-bottom: 14px;
+    position: relative;
   }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid #1f4a4230;
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .field-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass-light);
+    margin-bottom: 8px;
+  }
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 3px;
+    border: 1px solid var(--teal-line);
+    background: var(--ink-deep);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+  }
+  input::placeholder { color: #4d6b64; }
+
+  button {
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    margin-top: 12px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--brass), var(--brass-light));
+    color: var(--ink-deep);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 13px;
+    border-radius: 3px;
+  }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--teal-line);
+    color: var(--paper-dim);
+    font-size: 12px;
+    padding: 11px;
+    border-radius: 3px;
+    margin-top: 12px;
+  }
+
+  .balance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .balance-amount {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--brass-light);
+  }
+  .location-note { font-size: 11px; color: var(--paper-dim); margin-top: 4px; }
+
   .reels {
-    display: flex; gap: 10px;
-    background: #06101c; border-radius: 12px; padding: 14px; margin-bottom: 16px;
+    display: flex; gap: 8px;
+    background: var(--ink-deep);
+    border-radius: 3px;
+    padding: 12px;
+    margin: 16px 0;
+    border: 1px solid var(--teal-line);
   }
   .reel {
-    flex: 1; background: #0e1a2b; border-radius: 10px; height: 80px;
-    display: flex; align-items: center; justify-content: center; font-size: 38px;
-    border: 1px solid #1e3a5f;
+    flex: 1;
+    background: #123a33;
+    border-radius: 3px;
+    height: 74px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    border: 1px solid var(--teal-line);
   }
   .reel.spinning { animation: shake 0.15s infinite; }
-  @keyframes shake { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-  .controls { display: flex; gap: 10px; align-items: center; justify-content: center; }
-  .bet-control { display: flex; align-items: center; gap: 8px; background: #06101c; border-radius: 10px; padding: 6px 10px; border: 1px solid #1e3a5f; }
-  .bet-control button { background: #1e3a5f; color: #f1f5f9; border: none; width: 26px; height: 26px; border-radius: 6px; font-size: 16px; cursor: pointer; }
-  .bet-control span { font-size: 14px; min-width: 46px; text-align: center; }
-  .spin-btn { background: linear-gradient(90deg, #38bdf8, #22d3ee); color: #06101c; border: none; font-weight: 700; font-size: 14px; padding: 12px 24px; border-radius: 12px; cursor: pointer; }
-  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .result { text-align: center; font-size: 13px; margin-top: 12px; min-height: 18px; font-weight: 600; }
-  .result.win { color: #86efac; }
-  .result.lose { color: #94a3b8; }
+  @keyframes shake { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-  .status-text { font-size: 12px; color: #64748b; margin-bottom: 10px; text-align: center; min-height: 16px; }
+  .controls { display: flex; gap: 10px; align-items: center; }
+  .bet-control {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--ink-deep); border-radius: 3px; padding: 6px 10px;
+    border: 1px solid var(--teal-line);
+  }
+  .bet-control button {
+    background: var(--teal-line); color: var(--paper);
+    width: 24px; height: 24px; border-radius: 3px; font-size: 14px;
+  }
+  .bet-control span { font-size: 13px; min-width: 40px; text-align: center; }
+  .spin-btn {
+    flex: 1;
+    background: linear-gradient(90deg, var(--brass), var(--brass-light));
+    color: var(--ink-deep);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 12px;
+    border-radius: 3px;
+  }
+  .spin-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .result { text-align: center; font-size: 12.5px; margin-top: 12px; min-height: 16px; font-weight: 700; }
+  .result.win { color: var(--good); }
+  .result.lose { color: var(--paper-dim); }
+
+  .status-text { font-size: 11.5px; color: var(--paper-dim); margin-bottom: 8px; text-align: center; min-height: 14px; }
+
+  /* Popup */
+  .overlay {
+    position: fixed; inset: 0;
+    background: #071b17dd;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+  }
+  .modal {
+    background: linear-gradient(180deg, #143f37, #0e2f2a);
+    border: 1px solid var(--brass);
+    border-radius: 4px;
+    max-width: 360px;
+    width: 100%;
+    padding: 26px 22px;
+    position: relative;
+  }
+  .modal .eyebrow { color: var(--brass-light); }
+  .modal h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .modal p {
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .modal input { margin-bottom: 4px; }
+  .modal-error { font-size: 11px; color: var(--bad); min-height: 14px; margin-top: 4px; }
+  .modal-success { font-size: 12px; color: var(--good); text-align: center; padding: 10px 0; }
 </style>
 </head>
 <body>
 
-<div class="info-banner">
-  🎮 Sanal para toplama oyunu. Gerçek para yatırma/çekme yoktur. Bölge bonusunu almak için
-  konumunuz oyunun bir parçası olarak kullanılır.
+<div class="overlay" id="welcomeOverlay">
+  <div class="modal">
+    <div class="eyebrow">Geliştirme Günlüğü</div>
+    <h2>Bölge Avcısı henüz inşa ediliyor</h2>
+    <p>
+      Şu anda bu oyunu birlikte şekillendiriyoruz — burada oynadığın her tur, bize neyin işe
+      yarayıp yaramadığını gösteriyor. Katkın için teşekkür ederiz. Site yayına girdiğinde,
+      bu sürece katılan kaşiflere sanal bir ödül tanımlayacağız.
+    </p>
+    <div id="emailForm">
+      <div class="field-label">Ödül bildirimi için e-posta (opsiyonel)</div>
+      <input type="email" id="emailInput" placeholder="ornek@eposta.com">
+      <div class="modal-error" id="emailError"></div>
+      <button class="btn-primary" id="emailSubmitBtn">Bildirim İste</button>
+      <button class="btn-secondary" id="skipBtn">Şimdi değil, oyuna geç</button>
+    </div>
+    <div class="modal-success" id="emailSuccess" style="display:none;">
+      ✓ Teşekkürler, kayıt alındı. Şimdi keşfe çıkabilirsin.
+    </div>
+  </div>
 </div>
 
+<div class="eyebrow">Sanal Keşif Oyunu</div>
 <h1>Bölge Avcısı</h1>
-<p class="subtitle">Bulunduğun bölgeye özel sanal para topla, oyunda kullan</p>
+<p class="subtitle">
+  Bulunduğun bölgeye özel sanal para topla, keşif defterini doldur. Gerçek para
+  yatırma veya çekme yoktur — her şey sanaldır.
+</p>
 
-<div class="nickname-card" id="nicknameCard">
-  <div>Oyuncu adın:</div>
+<div class="card" id="nicknameCard">
+  <div class="field-label">Kaşif Adın</div>
   <input type="text" id="nicknameInput" placeholder="Örn. Ahmet_34" maxlength="20">
-  <button id="startBtn">Oyuna Başla</button>
+  <button class="btn-primary" id="startBtn">Keşfe Başla</button>
 </div>
 
-<div class="balance-card" id="balanceCard" style="display:none;">
-  <div class="label">Sanal Bakiye</div>
-  <div class="amount">🪙 <span id="balance">0</span></div>
+<div class="card" id="balanceCard" style="display:none;">
+  <div class="field-label">Keşif Bakiyesi</div>
+  <div class="balance-row">
+    <div class="balance-amount">🪙 <span id="balance">0</span></div>
+  </div>
   <div class="location-note" id="locationNote"></div>
-  <button class="collect-btn" id="collectBtn">📍 Bölge Bonusu Topla</button>
+  <button class="btn-primary" id="collectBtn">📍 Bölge Bonusu Topla</button>
 </div>
 
 <div class="status-text" id="statusText"></div>
 
-<div class="machine" id="machine">
+<div class="card" id="machine" style="display:none;">
+  <div class="field-label">Şans Çarkı</div>
   <div class="reels" id="reels">
     <div class="reel" id="reel0">🍒</div>
     <div class="reel" id="reel1">🍋</div>
@@ -153,6 +290,14 @@
 <script>
 const SYMBOLS = ['🍒', '🍋', '🔔', '⭐', '💎', '7️⃣'];
 const PAYOUTS = { '🍒': 2, '🍋': 3, '🔔': 5, '⭐': 8, '💎': 15, '7️⃣': 30 };
+
+const welcomeOverlay = document.getElementById('welcomeOverlay');
+const emailForm = document.getElementById('emailForm');
+const emailInput = document.getElementById('emailInput');
+const emailError = document.getElementById('emailError');
+const emailSuccess = document.getElementById('emailSuccess');
+const emailSubmitBtn = document.getElementById('emailSubmitBtn');
+const skipBtn = document.getElementById('skipBtn');
 
 const nicknameCard = document.getElementById('nicknameCard');
 const nicknameInput = document.getElementById('nicknameInput');
@@ -176,6 +321,41 @@ let spinning = false;
 let playerId = null;
 let nickname = null;
 let lastCollectAt = 0;
+
+function closeWelcome() {
+  welcomeOverlay.style.display = 'none';
+  localStorage.setItem('welcome_seen', '1');
+}
+
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+emailSubmitBtn.addEventListener('click', async () => {
+  const val = emailInput.value.trim();
+  if (!val) { emailError.textContent = 'Bir e-posta gir ya da "Şimdi değil"e bas.'; return; }
+  if (!isValidEmail(val)) { emailError.textContent = 'Geçerli bir e-posta adresi gir.'; return; }
+  emailSubmitBtn.disabled = true;
+  try {
+    await fetch('/api/save-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: val, playerId: getPlayerId() })
+    });
+    emailForm.style.display = 'none';
+    emailSuccess.style.display = 'block';
+    setTimeout(closeWelcome, 1400);
+  } catch (e) {
+    emailError.textContent = 'Bir şeyler ters gitti, tekrar dene.';
+    emailSubmitBtn.disabled = false;
+  }
+});
+
+skipBtn.addEventListener('click', closeWelcome);
+
+if (localStorage.getItem('welcome_seen')) {
+  welcomeOverlay.style.display = 'none';
+}
 
 function getPlayerId() {
   let id = localStorage.getItem('player_id');
@@ -296,10 +476,10 @@ async function spin() {
   if (winAmount > 0) {
     balance += winAmount;
     resultEl.className = 'result win';
-    resultEl.textContent = `🎉 Kazandın! +${winAmount} sanal kredi`;
+    resultEl.textContent = `Kazandın — +${winAmount} sanal kredi`;
   } else {
     resultEl.className = 'result lose';
-    resultEl.textContent = 'Bu sefer olmadı, tekrar dene!';
+    resultEl.textContent = 'Bu sefer olmadı, tekrar dene.';
   }
   updateBalanceDisplay();
   await syncPlayer({});
@@ -309,7 +489,7 @@ async function spin() {
 
 startBtn.addEventListener('click', async () => {
   const val = nicknameInput.value.trim();
-  if (!val) { statusText.textContent = 'Lütfen bir oyuncu adı gir.'; return; }
+  if (!val) { statusText.textContent = 'Lütfen bir kaşif adı gir.'; return; }
   nickname = val;
   playerId = getPlayerId();
   localStorage.setItem('player_nickname', nickname);
@@ -326,7 +506,6 @@ betUpBtn.addEventListener('click', () => { bet = Math.min(bet + 10, 200); betAmo
 betDownBtn.addEventListener('click', () => { bet = Math.max(bet - 10, 10); betAmountEl.textContent = bet; });
 spinBtn.addEventListener('click', spin);
 
-// Daha önce oyuna başlamışsa otomatik devam ettir
 const savedNickname = localStorage.getItem('player_nickname');
 if (savedNickname) {
   nicknameInput.value = savedNickname;
