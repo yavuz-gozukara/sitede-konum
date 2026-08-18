@@ -113,10 +113,9 @@ let markers = [];
 function ensureMap() {
   if (map) return;
   map = L.map('map').setView([39.0, 35.0], 5);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap katkıda bulunanları &copy; CARTO',
-    maxZoom: 19,
-    subdomains: 'abcd'
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap katkıda bulunanları',
+    maxZoom: 19
   }).addTo(map);
 }
 
