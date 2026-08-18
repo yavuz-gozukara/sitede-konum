@@ -113,9 +113,10 @@ let markers = [];
 function ensureMap() {
   if (map) return;
   map = L.map('map').setView([39.0, 35.0], 5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap katkıda bulunanları',
-    maxZoom: 19
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap katkıda bulunanları &copy; CARTO',
+    maxZoom: 19,
+    subdomains: 'abcd'
   }).addTo(map);
 }
 
@@ -137,9 +138,11 @@ function renderMarkers(players) {
     markers.push(marker);
   });
 
-  if (withCoords.length > 0) {
+  if (withCoords.length === 1) {
+    map.setView([withCoords[0].lat, withCoords[0].lng], 12);
+  } else if (withCoords.length > 1) {
     const group = L.featureGroup(markers);
-    map.fitBounds(group.getBounds().pad(0.3));
+    map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 12 });
   }
 }
 
@@ -169,6 +172,7 @@ async function loadPlayers() {
     `).join('');
     loginBox.style.display = 'none';
     dashboard.style.display = 'block';
+    setTimeout(() => { if (map) map.invalidateSize(); }, 100);
   } catch (e) {
     loginError.textContent = 'Bağlantı hatası: ' + e.message;
   }
