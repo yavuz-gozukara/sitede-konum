@@ -94,6 +94,19 @@
     </thead>
     <tbody id="tableBody"></tbody>
   </table>
+
+  <div class="top-bar" style="margin-top:24px;">
+    <h1 style="font-size:16px;">📧 Ödül Bildirimi İçin Bırakılan E-postalar</h1>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>E-posta</th>
+        <th>Kayıt Tarihi</th>
+      </tr>
+    </thead>
+    <tbody id="emailTableBody"></tbody>
+  </table>
 </div>
 
 <script>
@@ -172,6 +185,24 @@ async function loadPlayers() {
     loginBox.style.display = 'none';
     dashboard.style.display = 'block';
     setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+
+    // E-posta listesini de yükle
+    const emailTableBody = document.getElementById('emailTableBody');
+    try {
+      const emailRes = await fetch('/api/admin-emails', {
+        headers: { 'x-admin-secret': adminSecret }
+      });
+      const emailData = await emailRes.json();
+      const emails = emailData.emails || [];
+      emailTableBody.innerHTML = emails.length
+        ? emails.map(e => `
+            <tr>
+              <td>${e.email}</td>
+              <td>${e.submittedAt ? new Date(e.submittedAt).toLocaleString('tr-TR') : '-'}</td>
+            </tr>
+          `).join('')
+        : '<tr><td colspan="2" style="color:#64748b;">Henüz e-posta kaydı yok</td></tr>';
+    } catch (e) {}
   } catch (e) {
     loginError.textContent = 'Bağlantı hatası: ' + e.message;
   }
