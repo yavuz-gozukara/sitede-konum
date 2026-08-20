@@ -62,6 +62,27 @@
   tr:last-child td { border-bottom: none; }
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
   .refresh-btn { width: auto; padding: 8px 16px; font-size: 13px; }
+  .danger-btn {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 12px;
+    border-radius: 8px;
+    border: 1px solid #7f1d1d;
+    background: transparent;
+    color: #fca5a5;
+    cursor: pointer;
+  }
+  .danger-btn:hover { background: #7f1d1d33; }
+  .row-actions { display: flex; gap: 8px; }
+  .delete-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .delete-link:hover { color: #fca5a5; }
   .count { font-size: 12px; color: #64748b; margin-bottom: 10px; }
   #dashboard { display: none; }
   #map { height: 340px; width: 100%; border-radius: 10px; margin-bottom: 16px; border: 1px solid #1e293b; }
@@ -79,7 +100,10 @@
 <div id="dashboard">
   <div class="top-bar">
     <h1>👥 Oyuncular</h1>
-    <button class="refresh-btn" id="refreshBtn">🔄 Yenile</button>
+    <div class="row-actions">
+      <button class="refresh-btn" id="refreshBtn">🔄 Yenile</button>
+      <button class="danger-btn" id="clearPlayersBtn">🗑️ Tüm Oyuncuları Temizle</button>
+    </div>
   </div>
   <div class="count" id="countText"></div>
   <div id="map"></div>
@@ -90,6 +114,7 @@
         <th>Şehir / Ülke</th>
         <th>Bakiye</th>
         <th>Son Görülme</th>
+        <th></th>
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
@@ -97,12 +122,14 @@
 
   <div class="top-bar" style="margin-top:24px;">
     <h1 style="font-size:16px;">📧 Ödül Bildirimi İçin Bırakılan E-postalar</h1>
+    <button class="danger-btn" id="clearEmailsBtn">🗑️ Tüm E-postaları Temizle</button>
   </div>
   <table>
     <thead>
       <tr>
         <th>E-posta</th>
         <th>Kayıt Tarihi</th>
+        <th></th>
       </tr>
     </thead>
     <tbody id="emailTableBody"></tbody>
@@ -118,6 +145,8 @@ const loginError = document.getElementById('loginError');
 const tableBody = document.getElementById('tableBody');
 const countText = document.getElementById('countText');
 const refreshBtn = document.getElementById('refreshBtn');
+const clearPlayersBtn = document.getElementById('clearPlayersBtn');
+const clearEmailsBtn = document.getElementById('clearEmailsBtn');
 
 let adminSecret = sessionStorage.getItem('admin_secret') || '';
 let map = null;
@@ -158,6 +187,15 @@ function renderMarkers(players) {
   }
 }
 
+async function callClearApi(body) {
+  const res = await fetch('/api/admin-clear', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminSecret },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
+}
+
 async function loadPlayers() {
   try {
     const res = await fetch('/api/admin-players', {
@@ -174,14 +212,27 @@ async function loadPlayers() {
     const players = data.players || [];
     countText.textContent = `Toplam ${players.length} oyuncu`;
     renderMarkers(players);
-    tableBody.innerHTML = players.map(p => `
-      <tr>
-        <td>${p.nickname || '-'}</td>
-        <td>${p.city || '?'}, ${p.country || '?'}</td>
-        <td>🪙 ${(p.balance || 0).toLocaleString('tr-TR')}</td>
-        <td>${p.lastSeen ? new Date(p.lastSeen).toLocaleString('tr-TR') : '-'}</td>
-      </tr>
-    `).join('');
+    tableBody.innerHTML = players.length
+      ? players.map(p => `
+          <tr>
+            <td>${p.nickname || '-'}</td>
+            <td>${p.city || '?'}, ${p.country || '?'}</td>
+            <td>🪙 ${(p.balance || 0).toLocaleString('tr-TR')}</td>
+            <td>${p.lastSeen ? new Date(p.lastSeen).toLocaleString('tr-TR') : '-'}</td>
+            <td><button class="delete-link" data-player-id="${p.playerId}">sil</button></td>
+          </tr>
+        `).join('')
+      : '<tr><td colspan="5" style="color:#64748b;">Henüz oyuncu yok</td></tr>';
+
+    document.querySelectorAll('.delete-link[data-player-id]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Bu oyuncuyu silmek istediğine emin misin?')) return;
+        btn.disabled = true;
+        await callClearApi({ action: 'delete-player', playerId: btn.dataset.playerId });
+        loadPlayers();
+      });
+    });
+
     loginBox.style.display = 'none';
     dashboard.style.display = 'block';
     setTimeout(() => { if (map) map.invalidateSize(); }, 100);
@@ -199,9 +250,19 @@ async function loadPlayers() {
             <tr>
               <td>${e.email}</td>
               <td>${e.submittedAt ? new Date(e.submittedAt).toLocaleString('tr-TR') : '-'}</td>
+              <td><button class="delete-link" data-email="${e.email}">sil</button></td>
             </tr>
           `).join('')
-        : '<tr><td colspan="2" style="color:#64748b;">Henüz e-posta kaydı yok</td></tr>';
+        : '<tr><td colspan="3" style="color:#64748b;">Henüz e-posta kaydı yok</td></tr>';
+
+      document.querySelectorAll('.delete-link[data-email]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Bu e-postayı silmek istediğine emin misin?')) return;
+          btn.disabled = true;
+          await callClearApi({ action: 'delete-email', email: btn.dataset.email });
+          loadPlayers();
+        });
+      });
     } catch (e) {}
   } catch (e) {
     loginError.textContent = 'Bağlantı hatası: ' + e.message;
@@ -215,6 +276,22 @@ loginBtn.addEventListener('click', () => {
 });
 
 refreshBtn.addEventListener('click', loadPlayers);
+
+clearPlayersBtn.addEventListener('click', async () => {
+  if (!confirm('TÜM oyuncu kayıtlarını silmek istediğine emin misin? Bu işlem geri alınamaz.')) return;
+  clearPlayersBtn.disabled = true;
+  await callClearApi({ action: 'clear-players' });
+  clearPlayersBtn.disabled = false;
+  loadPlayers();
+});
+
+clearEmailsBtn.addEventListener('click', async () => {
+  if (!confirm('TÜM e-posta kayıtlarını silmek istediğine emin misin? Bu işlem geri alınamaz.')) return;
+  clearEmailsBtn.disabled = true;
+  await callClearApi({ action: 'clear-emails' });
+  clearEmailsBtn.disabled = false;
+  loadPlayers();
+});
 
 if (adminSecret) {
   loadPlayers();
